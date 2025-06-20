@@ -1,41 +1,94 @@
-# Compiled Lua sources
-luac.out
+local MissaoTab = Window:CreateTab("📜 Missões", nil)
 
-# luarocks build files
-*.src.rock
-*.zip
-*.tar.gz
+local ativarMissao = false
+MissaoTab:CreateToggle("Ativar Missões", nil, function(Value)
+    ativarMissao = Value
+    if ativarMissao then
+        print("Auto Missões Ativado")
+    else
+        print("Auto Missões Desativado")
+    end
+end)
 
-# Object files
-*.o
-*.os
-*.ko
-*.obj
-*.elf
+local questSelecionada = nil
+MissaoTab:CreateDropdown("Selecionar Missão", {
+    "Bandit Quest - Ilha Inicial",
+    "Monkey Quest - Jungle",
+    "Gorilla Quest - Jungle",
+    "Pirate Quest - Pirate Island",
+    "Brute Quest - Pirate Island",
+    "Desert Bandit Quest - Desert",
+    "Snow Bandit Quest - Snow Island",
+    "Yeti Quest - Snow Island",
+    "Marine Quest - Marine Fortress",
+    "Sky Bandit Quest - Sky Island",
+    "God Guard Quest - Sky Island",
+    "Shanda Quest - Sky Island",
+    "Royal Squad Quest - Sky Island",
+    "Royal Soldier Quest - Sky Island",
+    "Galley Pirate Quest - Fountain City",
+    "Galley Captain Quest - Fountain City"
+}, function(Value)
+    questSelecionada = Value
+    print("Missão selecionada: "..Value)
+end)
 
-# Precompiled Headers
-*.gch
-*.pch
+-- Sistema de Auto Missão
+spawn(function()
+    while task.wait() do
+        if ativarMissao and questSelecionada ~= nil then
+            pcall(function()
+                local args = {
+                    [1] = "StartQuest",
+                    [2] = "",
+                    [3] = 1
+                }
 
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-*.def
-*.exp
+                -- Sistema para detectar qual missão foi selecionada
+                if questSelecionada == "Bandit Quest - Ilha Inicial" then
+                    args[2] = "BanditQuest1"
+                elseif questSelecionada == "Monkey Quest - Jungle" then
+                    args[2] = "JungleQuest"
+                elseif questSelecionada == "Gorilla Quest - Jungle" then
+                    args[2] = "JungleQuest"
+                    args[3] = 2
+                elseif questSelecionada == "Pirate Quest - Pirate Island" then
+                    args[2] = "BuggyQuest1"
+                elseif questSelecionada == "Brute Quest - Pirate Island" then
+                    args[2] = "BuggyQuest1"
+                    args[3] = 2
+                elseif questSelecionada == "Desert Bandit Quest - Desert" then
+                    args[2] = "DesertQuest"
+                elseif questSelecionada == "Snow Bandit Quest - Snow Island" then
+                    args[2] = "SnowQuest"
+                elseif questSelecionada == "Yeti Quest - Snow Island" then
+                    args[2] = "SnowQuest"
+                    args[3] = 2
+                elseif questSelecionada == "Marine Quest - Marine Fortress" then
+                    args[2] = "MarineQuest"
+                elseif questSelecionada == "Sky Bandit Quest - Sky Island" then
+                    args[2] = "SkyQuest"
+                elseif questSelecionada == "God Guard Quest - Sky Island" then
+                    args[2] = "SkyExpQuest"
+                elseif questSelecionada == "Shanda Quest - Sky Island" then
+                    args[2] = "SkyExpQuest"
+                    args[3] = 2
+                elseif questSelecionada == "Royal Squad Quest - Sky Island" then
+                    args[2] = "SkyExpQuest"
+                    args[3] = 3
+                elseif questSelecionada == "Royal Soldier Quest - Sky Island" then
+                    args[2] = "SkyExpQuest"
+                    args[3] = 4
+                elseif questSelecionada == "Galley Pirate Quest - Fountain City" then
+                    args[2] = "FountainQuest"
+                elseif questSelecionada == "Galley Captain Quest - Fountain City" then
+                    args[2] = "FountainQuest"
+                    args[3] = 2
+                end
 
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
-
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
-
+                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(args))
+                wait(5)
+            end)
+        end
+    end
+end)
